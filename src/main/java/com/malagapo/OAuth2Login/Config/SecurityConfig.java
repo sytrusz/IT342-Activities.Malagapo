@@ -20,7 +20,7 @@ public class SecurityConfig {
             )
             .oauth2Login(oauth2 -> oauth2.defaultSuccessUrl("/contacts", true))
             .logout(logout -> logout
-                .logoutSuccessUrl("/").permitAll()
+                .logoutSuccessUrl("/login").permitAll()
                 .clearAuthentication(true)
                 .invalidateHttpSession(true))
             .csrf(csrf -> csrf.disable())

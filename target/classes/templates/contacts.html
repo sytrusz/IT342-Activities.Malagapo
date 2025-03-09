@@ -24,12 +24,26 @@
             var myModal = new bootstrap.Modal(document.getElementById('editModal'));
             myModal.show();
         }
+        
+        function openAddModal() {
+            // Clear the form fields
+            document.getElementById("addName").value = "";
+            document.getElementById("addEmail").value = "";
+            document.getElementById("addPhoneNumber").value = "";
+            
+            // Show the modal
+            var addModal = new bootstrap.Modal(document.getElementById('addModal'));
+            addModal.show();
+        }
     </script>
 </head>
 <body class="container mt-4">
     <h1>Your Google Contacts</h1>
 
-    <input type="text" id="search" onkeyup="filterContacts()" class="form-control mb-3" placeholder="Search contacts...">
+    <div class="d-flex justify-content-between mb-3">
+        <input type="text" id="search" onkeyup="filterContacts()" class="form-control me-2" placeholder="Search contacts..." style="max-width: 300px;">
+        <button class="btn btn-primary" onclick="openAddModal()">Add Contact</button>
+    </div>
 
     <table class="table table-striped">
         <thead class="table-dark">
@@ -54,17 +68,17 @@
                         Edit
                     </button>
 
-                    <!-- Delete Form -->
-                    <form th:action="@{/contacts/delete}" method="post" class="d-inline">
-                        <input type="hidden" name="resourceName" th:value="${contact.resourceName}">
-                        <button class="btn btn-danger btn-sm">Delete</button>
-                    </form>
+                    <!-- Delete Button to Open Modal -->
+                    <button class="btn btn-danger btn-sm" 
+                        th:attr="onclick=|openDeleteModal('${contact.resourceName}')|">
+                        Delete
+                    </button>
                 </td>
             </tr>
         </tbody>
     </table>
 
-    <a href="/logout" class="btn btn-secondary mt-3">Logout</a>
+    <button class="btn btn-secondary mt-3" onclick="openLogoutModal()">Logout</button>
 
     <!-- 🔹 Bootstrap Modal for Editing -->
     <div class="modal fade" id="editModal" tabindex="-1" aria-hidden="true">
@@ -99,6 +113,101 @@
         </div>
     </div>
 
+    <!-- 🆕 Bootstrap Modal for Adding New Contact -->
+    <div class="modal fade" id="addModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add New Contact</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form th:action="@{/contacts/add}" method="post">
+                        <div class="mb-3">
+                            <label for="addName" class="form-label">Name:</label>
+                            <input type="text" id="addName" name="name" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="addEmail" class="form-label">Email:</label>
+                            <input type="email" id="addEmail" name="email" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="addPhoneNumber" class="form-label">Phone Number:</label>
+                            <input type="text" id="addPhoneNumber" name="phoneNumber" class="form-control">
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <button type="submit" class="btn btn-primary">Add Contact</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Confirm Deletion</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to delete this contact?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <!-- Form for deletion -->
+                    <form id="deleteForm" method="post" th:action="@{/contacts/delete}">
+                        <input type="hidden" name="resourceName" id="deleteResourceName">
+                        <button type="submit" class="btn btn-danger">Delete</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 🔹 Bootstrap Modal for Logout Confirmation -->
+    <div class="modal fade" id="logoutModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Confirm Logout</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to log out?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <a href="/logout" class="btn btn-danger">Logout</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // Function to open the delete confirmation modal
+        function openDeleteModal(resourceName) {
+            // Set the resourceName in the hidden input field
+            document.getElementById("deleteResourceName").value = resourceName;
+    
+            // Show the modal
+            var deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
+            deleteModal.show();
+        }
+    </script>
+
+    <script>
+        function openLogoutModal() {
+            var logoutModal = new bootstrap.Modal(document.getElementById('logoutModal'));
+            logoutModal.show();
+        }
+    </script>
+    
 </body>
 </html>
